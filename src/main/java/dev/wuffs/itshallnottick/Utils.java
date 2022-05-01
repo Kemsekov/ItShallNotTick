@@ -102,11 +102,11 @@ public class Utils {
             ignored = Config.entityResources.contains(entityRegName);
         }
 
-        if (!Config.entityWildcards.isEmpty()) {
+        if (!Config.entityWildcards.isEmpty() && !ignored) {
             ignored = Config.entityWildcards.stream().anyMatch(e -> entityRegName.toString().startsWith(e));
         }
 
-        if (!Config.entityTagKeys.isEmpty()) {
+        if (!Config.entityTagKeys.isEmpty() && !ignored) {
             ignored = Config.entityTagKeys.stream().anyMatch(entityType::is);
         }
 
