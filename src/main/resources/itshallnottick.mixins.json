@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "dev.wuffs.itshallnottick.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": [
+    "EntityTickMixin",
+    "WorldEntitySpawnerOptimizationMixin"
+  ],
+  "client": [
+    "MaxDistanceEntity"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
