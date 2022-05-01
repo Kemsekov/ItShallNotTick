@@ -118,36 +118,5 @@ public class Utils {
 
             return ignored;
         });
-//
-////        return entityType.getTags().anyMatch(e -> {
-////            var values = Config.entityIgnoreList.get();
-//////            if (values)
-////        });
-//
-//        var entityTags = entityType.getTags().toList();
-//
-//        if (entityTags.size() > 0) {
-//            for (TagKey<EntityType<?>> tag : entityTags) {
-//                if (Config.entityIgnoreList.get().contains("#" + tag.location().toString())) {
-//                    return true;
-//                }
-//            }
-//        }
-//
-//        for (String s : Config.entityIgnoreList.get()) {
-//            if (s.matches(".*:\\*")) {
-//                String id = s.split(":")[0];
-//                String entityId = entityRegName.toString().split(":")[0];
-//
-//                if (id.equals(entityId)) {
-//                    return true;
-//                }
-//            } else {
-//                if (s.equals(entityRegName.toString())) {
-//                    return true;
-//                }
-//            }
-//        }
-//        return false;
     }
 }
