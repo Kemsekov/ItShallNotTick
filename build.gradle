@@ -5,6 +5,8 @@ plugins {
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
+def ENV = System.getenv()
+
 archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
