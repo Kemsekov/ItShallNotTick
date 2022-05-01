@@ -186,7 +186,7 @@ if (ENV.CURSE_DEPLOY) {
             addGameVersion "Forge"
             addGameVersion "${minecraft_version}"
             addGameVersion "Java 17"
-            mainArtifact(jar)
+            mainArtifact(remapJar.archivePath)
             changelog = getGitChangelog
             changelogType = 'markdown'
         }
