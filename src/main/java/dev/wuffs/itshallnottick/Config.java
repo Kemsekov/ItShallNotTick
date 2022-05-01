@@ -43,6 +43,8 @@ public class Config {
     public static final Set<String> entityWildcards = new HashSet<>();
 
     private static void updateMobLists() {
+        Utils.isIgnored.clear();
+
         for (String key : entityIgnoreList.get()) {
             if (key.contains("#")) {
                 entityTagKeys.add(TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(key.replace("#", ""))));

@@ -3,8 +3,11 @@ package dev.wuffs.itshallnottick;
 import dev.ftb.mods.ftbchunks.data.ClaimedChunk;
 import dev.ftb.mods.ftbchunks.data.FTBChunksAPI;
 import dev.ftb.mods.ftblibrary.math.ChunkDimPos;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -85,32 +88,36 @@ public class Utils {
 
         return false;
     }
+
+    public static Object2BooleanMap<EntityType<?>> isIgnored = new Object2BooleanOpenHashMap<>();
+
     public static boolean isIgnoredEntity(Entity entity) {
         if (Config.entityIgnoreList.get().isEmpty()) {
             return false;
         }
 
         var entityType = entity.getType();
-        var entityRegName = entityType.getRegistryName();
+        return isIgnored.computeIfAbsent(entityType, (et) -> {
+            var entityRegName = entityType.getRegistryName();
+            if (entityRegName == null) {
+                return false;
+            }
 
-        if (entityRegName == null) {
-            return false;
-        }
+            var ignored = false;
+            if (!Config.entityResources.isEmpty()) {
+                ignored = Config.entityResources.contains(entityRegName);
+            }
 
-        var ignored = false;
-        if (!Config.entityResources.isEmpty()) {
-            ignored = Config.entityResources.contains(entityRegName);
-        }
+            if (!Config.entityWildcards.isEmpty() && !ignored) {
+                ignored = Config.entityWildcards.stream().anyMatch(e -> entityRegName.toString().startsWith(e));
+            }
 
-        if (!Config.entityWildcards.isEmpty() && !ignored) {
-            ignored = Config.entityWildcards.stream().anyMatch(e -> entityRegName.toString().startsWith(e));
-        }
+            if (!Config.entityTagKeys.isEmpty() && !ignored) {
+                ignored = Config.entityTagKeys.stream().anyMatch(entityType::is);
+            }
 
-        if (!Config.entityTagKeys.isEmpty() && !ignored) {
-            ignored = Config.entityTagKeys.stream().anyMatch(entityType::is);
-        }
-
-        return ignored;
+            return ignored;
+        });
 //
 ////        return entityType.getTags().anyMatch(e -> {
 ////            var values = Config.entityIgnoreList.get();
