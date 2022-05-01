@@ -12,6 +12,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.server.timings.TimeTracker;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -57,31 +58,27 @@ public abstract class EntityTickMixin {
 
         if (Utils.isNearPlayer(world, entityPos, maxHeight, maxDistanceSquare)) {
             handleGuardEntityTick(consumer, entity);
-//            System.out.println("Im ticking!");
             return;
         }
-
-        // handle edge cases for entities outside radius
 
         if (isInClaimedChunk && ((LivingEntity) entity).isDeadOrDying()) {
             handleGuardEntityTick(consumer, entity);
         }
     }
 
-
     public void handleGuardEntityTick(Consumer<Entity> consumer, Entity entity) {
         try {
-            net.minecraftforge.server.timings.TimeTracker.ENTITY_UPDATE.trackStart(entity);
+            TimeTracker.ENTITY_UPDATE.trackStart(entity);
             consumer.accept(entity);
-        } catch (Throwable throwable) {
+        }
+        catch (Throwable throwable) {
             CrashReport crashreport = CrashReport.forThrowable(throwable, "Ticking entity");
             CrashReportCategory crashreportcategory = crashreport.addCategory("Entity being ticked");
             entity.fillCrashReportCategory(crashreportcategory);
             throw new ReportedException(crashreport);
-        } finally {
-            net.minecraftforge.server.timings.TimeTracker.ENTITY_UPDATE.trackEnd(entity);
+        }
+        finally {
+            TimeTracker.ENTITY_UPDATE.trackEnd(entity);
         }
     }
-
-
 }
