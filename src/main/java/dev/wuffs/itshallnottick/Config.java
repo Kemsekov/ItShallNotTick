@@ -53,9 +53,9 @@ public class Config {
             }
         }
 
-        System.out.println(entityResources);
-        System.out.println(entityTagKeys);
-        System.out.println(entityWildcards);
+        ItShallNotTick.LOGGER.debug(entityResources);
+        ItShallNotTick.LOGGER.debug(entityTagKeys);
+        ItShallNotTick.LOGGER.debug(entityWildcards);
     }
 
     static {
