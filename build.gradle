@@ -1,7 +1,10 @@
 plugins {
     id "dev.architectury.loom" version "0.11.0-SNAPSHOT"
     id "maven-publish"
+    id "com.matthewprenger.cursegradle" version "1.4.0"
 }
+
+apply from: 'https://files.saps.dev/ci/git-md-changelog.gradle'
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
 
