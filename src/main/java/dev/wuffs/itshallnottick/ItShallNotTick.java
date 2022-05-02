@@ -11,7 +11,7 @@ public class ItShallNotTick {
 
     public static final String MODID = "itshallnottick";
 
-    public static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LogManager.getLogger("ISNT");
 
     public ItShallNotTick() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.CONFIG);

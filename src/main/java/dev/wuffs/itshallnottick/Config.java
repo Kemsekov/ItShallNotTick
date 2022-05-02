@@ -67,6 +67,7 @@ public class Config {
         defaultIgnoreList.add("minecraft:wither");
         defaultIgnoreList.add("minecraft:phantom");
         defaultIgnoreList.add("minecraft:ender_dragon");
+        defaultIgnoreList.add("minecraft:elder_guardian");
 
         BUILDER.comment("General settings").push(CATEGORY_GENERAL);
         maxEntitySpawnDistanceHorizontal = BUILDER.comment("Maximum distance from player (horizontally) for entity spawning check [Squared, Default 64^2]")
