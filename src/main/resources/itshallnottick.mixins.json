@@ -7,7 +7,7 @@
     "WorldEntitySpawnerOptimizationMixin"
   ],
   "client": [
-    "MaxDistanceEntity"
+    "EntityRenderDispatcherMixin"
   ],
   "injectors": {
     "defaultRequire": 1

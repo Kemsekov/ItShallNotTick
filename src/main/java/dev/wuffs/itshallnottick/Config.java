@@ -87,7 +87,7 @@ public class Config {
                         "Tags can be used by using #minecraft:<tag_name> or #modid:<tag_name>",
                         "You can also use a wildcard after modid (modid:*)",
                         "Example list for a modpack",
-                        "entityIgnoreList = [\"minecraft:wither\",\"minecraft:phantom\",\"minecraft:ender_dragon\", \"botania:*\", \"create:*\", \"ftbic:*\", \"immersiveengineering:*\", \"ae2:*\", \"littlelogistics:*\", \"tiab:*\"]"
+                        "entityIgnoreList = [\"minecraft:wither\",\"minecraft:phantom\",\"minecraft:ender_dragon\", \"minecraft:elder_guardian\", \"botania:*\", \"create:*\", \"ftbic:*\", \"immersiveengineering:*\", \"ae2:*\", \"littlelogistics:*\", \"tiab:*\"]"
                 )
                 .define("entityIgnoreList", defaultIgnoreList);
 

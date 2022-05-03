@@ -17,9 +17,9 @@ import java.util.List;
 public class Utils {
 
     public static boolean isInClaimedChunk(Level level, BlockPos blockPos) {
+//        Todo something somthing change this
         if (!FTBChunksAPI.isManagerLoaded()) {
-            System.out.println("Chunk manager not loaded");
-            return true;
+            return false;
         }
 
         ClaimedChunk chunk = FTBChunksAPI.getManager().getChunk(new ChunkDimPos(level, blockPos));
@@ -85,7 +85,7 @@ public class Utils {
             double x = player.getX() - cameraX;
             double z = player.getZ() - cameraZ;
 
-            System.out.printf("D: %d, XZ: %d %n",maxDistanceSquare, Math.round(x * x + z * z));
+//            System.out.printf("D: %d, XZ: %d %n",maxDistanceSquare, Math.round(x * x + z * z));
             return x * x + z * z < maxDistanceSquare;
         }
 
