@@ -4,7 +4,8 @@
   "compatibilityLevel": "JAVA_16",
   "mixins": [
     "EntityTickMixin",
-    "WorldEntitySpawnerOptimizationMixin"
+    "WorldEntitySpawnerOptimizationMixin",
+    "ItemEntityMixin"
   ],
   "client": [
     "EntityRenderDispatcherMixin"

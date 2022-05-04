@@ -17,15 +17,48 @@ import java.util.List;
 public class Utils {
 
     public static boolean isInClaimedChunk(Level level, BlockPos blockPos) {
-//        Todo something somthing change this
+//        Todo something something change this see below
         if (!FTBChunksAPI.isManagerLoaded()) {
             return false;
         }
 
         ClaimedChunk chunk = FTBChunksAPI.getManager().getChunk(new ChunkDimPos(level, blockPos));
-
         return chunk != null;
+
+//        ChunkPos pos = new ChunkPos(blockPos);
+//        boolean claimedChunk = isClaimedChunk(pos);
+//        if (claimedChunk) {
+//            System.out.printf("chunk at (%s) claimed(%b)%n", pos, claimedChunk);
+//        }
+//        return claimedChunk;
     }
+
+//    private static final Cache<ChunkPos, Boolean> isClaimedCache = CacheBuilder.newBuilder()
+//            .expireAfterWrite(Duration.ofSeconds(30))
+//            .build();
+//
+//    public static boolean isClaimedChunk(ChunkPos pos) {
+//        try {
+//            return isClaimedCache.get(pos, () -> {
+//                if (MapManager.inst == null) {
+//                    System.out.println("Skipped check, assumed false because Map Dim is not get setup");
+//                    return false;
+//                }
+//                MapDimension current = MapDimension.getCurrent();
+//                MapRegion region = current.getRegion(XZ.regionFromChunk(pos));
+//                if (region == null || region.getData() == null) {
+//                    System.out.println("Region data is null");
+//                    return false;
+//                }
+//                MapChunk mapChunk = region.getData().chunks.get(XZ.of(pos));
+//                System.out.printf("Mapchunk is null? xz: %s, %s, %s, %b, %s%n",  XZ.regionFromChunk(pos), XZ.of(pos), pos, mapChunk == null, region.getData().chunks.keySet());
+//                return mapChunk != null && mapChunk.claimedDate != null;
+//            });
+//        } catch (ExecutionException e) {
+//            isClaimedCache.invalidate(pos);
+//            return false;
+//        }
+//    }
 
     public static boolean isNearPlayer(Level level, BlockPos blockPos, int maxHeight, int maxDistanceSquare) {
         return isNearPlayerInternal(level, blockPos.getX(), blockPos.getY(), blockPos.getZ(), maxHeight, maxDistanceSquare, false);
