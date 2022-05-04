@@ -186,6 +186,9 @@ if (ENV.CURSE_DEPLOY) {
             addGameVersion "Forge"
             addGameVersion "${minecraft_version}"
             addGameVersion "Java 17"
+	    relations {
+                requiredDependency 'ftb-chunks-forge'
+	    }
             mainArtifact(remapJar.archivePath)
             changelog = getGitChangelog
             changelogType = 'markdown'
