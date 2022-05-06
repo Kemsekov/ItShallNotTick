@@ -105,7 +105,7 @@ dependencies {
     // at runtime, use the full JEI jar
 //    modRuntimeOnly "mezz.jei:jei-1.18.2:${jei_version}"
 
-    modCompileOnly "dev.ftb.mods:ftb-chunks-forge:1802.3.5-build.132"
+    modImplementation "dev.ftb.mods:ftb-chunks-forge:1802.3.5-build.132"
 }
 
 processResources {
