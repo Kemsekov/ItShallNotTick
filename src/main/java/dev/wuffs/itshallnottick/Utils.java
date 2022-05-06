@@ -1,8 +1,6 @@
 package dev.wuffs.itshallnottick;
 
-import dev.ftb.mods.ftbchunks.data.ClaimedChunk;
-import dev.ftb.mods.ftbchunks.data.FTBChunksAPI;
-import dev.ftb.mods.ftblibrary.math.ChunkDimPos;
+import dev.wuffs.itshallnottick.integration.FTBChunks;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.BlockPos;
@@ -17,20 +15,11 @@ import java.util.List;
 public class Utils {
 
     public static boolean isInClaimedChunk(Level level, BlockPos blockPos) {
-//        Todo something something change this see below
-        if (!FTBChunksAPI.isManagerLoaded()) {
-            return false;
+        if (ItShallNotTick.isFTBChunksLoaded) {
+            return FTBChunks.isInClaimedChunk(level, blockPos);
         }
 
-        ClaimedChunk chunk = FTBChunksAPI.getManager().getChunk(new ChunkDimPos(level, blockPos));
-        return chunk != null;
-
-//        ChunkPos pos = new ChunkPos(blockPos);
-//        boolean claimedChunk = isClaimedChunk(pos);
-//        if (claimedChunk) {
-//            System.out.printf("chunk at (%s) claimed(%b)%n", pos, claimedChunk);
-//        }
-//        return claimedChunk;
+        return false;
     }
 
 //    private static final Cache<ChunkPos, Boolean> isClaimedCache = CacheBuilder.newBuilder()

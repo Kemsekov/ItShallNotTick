@@ -1,5 +1,6 @@
 package dev.wuffs.itshallnottick;
 
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -13,7 +14,11 @@ public class ItShallNotTick {
 
     public static final Logger LOGGER = LogManager.getLogger("ISNT");
 
+    public static boolean isFTBChunksLoaded = false;
+
     public ItShallNotTick() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.CONFIG);
+
+        isFTBChunksLoaded = ModList.get().isLoaded("ftbchunks");
     }
 }
