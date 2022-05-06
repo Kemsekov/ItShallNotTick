@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class EntityRenderDispatcherMixin {
     @Inject(at = @At("HEAD"), method = "shouldRender", cancellable = true)
     public <E extends Entity> void shouldDoRender(E entity, Frustum clippingHelper, double cameraX, double cameraY, double cameraZ, CallbackInfoReturnable<Boolean> cir) {
-        if (!dev.wuffs.itshallnottick.Client.EntityRenderDispatcher.shouldDoRender(entity, clippingHelper, cameraX, cameraY,cameraZ)){
+        if (!dev.wuffs.itshallnottick.client.EntityRenderDispatcher.shouldDoRender(entity, clippingHelper, cameraX, cameraY,cameraZ)){
             cir.cancel();
         }
     }

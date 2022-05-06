@@ -1,4 +1,4 @@
-package dev.wuffs.itshallnottick.Client;
+package dev.wuffs.itshallnottick.client;
 
 import dev.wuffs.itshallnottick.Config;
 import dev.wuffs.itshallnottick.Utils;

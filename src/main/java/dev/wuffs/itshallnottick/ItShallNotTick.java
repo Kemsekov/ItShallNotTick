@@ -1,5 +1,7 @@
 package dev.wuffs.itshallnottick;
 
+import dev.wuffs.itshallnottick.integration.FTBChunks;
+import dev.wuffs.itshallnottick.network.PacketHandler;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -20,5 +22,10 @@ public class ItShallNotTick {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.CONFIG);
 
         isFTBChunksLoaded = ModList.get().isLoaded("ftbchunks");
+        if (isFTBChunksLoaded) {
+            FTBChunks.setup();
+        }
+
+        PacketHandler.regsiter();
     }
 }

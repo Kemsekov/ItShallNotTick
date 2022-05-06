@@ -13,6 +13,6 @@ public class ItemEntityMixin {
 
     @Redirect(method = "Lnet/minecraft/world/entity/item/ItemEntity;tick()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;noCollision(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/AABB;)Z"))
     private boolean collision(Level level, Entity entity, AABB aabb) {
-      return dev.wuffs.itshallnottick.Entity.ItemEntity.noCollision(level, ((Entity) (Object)this), ((Entity) (Object)this).getBoundingBox().deflate(1.0E-7));
+      return dev.wuffs.itshallnottick.entity.ItemEntity.noCollision(level, ((Entity) (Object)this), ((Entity) (Object)this).getBoundingBox().deflate(1.0E-7));
     }
 }

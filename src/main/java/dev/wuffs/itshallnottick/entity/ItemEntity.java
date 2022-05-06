@@ -1,4 +1,4 @@
-package dev.wuffs.itshallnottick.Entity;
+package dev.wuffs.itshallnottick.entity;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

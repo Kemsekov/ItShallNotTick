@@ -43,7 +43,7 @@ public class TickOptimizer {
             return;
         }
 
-        if (isInClaimedChunk && ((LivingEntity) entity).isDeadOrDying()) {
+        if (isInClaimedChunk || ((LivingEntity) entity).isDeadOrDying()) {
             handleGuardEntityTick(consumer, entity);
         }
     }
