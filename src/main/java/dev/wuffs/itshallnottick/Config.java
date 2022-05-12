@@ -27,6 +27,7 @@ public class Config {
     public static ForgeConfigSpec.ConfigValue<Integer> maxEntityTickDistanceVertical;
 
     public static ForgeConfigSpec.ConfigValue<List<String>> entityIgnoreList;
+    public static ForgeConfigSpec.ConfigValue<Integer> minPlayers;
 
     @SubscribeEvent
     public static void onLoad(ModConfigEvent.Loading configEvent) {
@@ -91,6 +92,9 @@ public class Config {
                         "entityIgnoreList = [\"minecraft:wither\",\"minecraft:phantom\",\"minecraft:ender_dragon\", \"minecraft:elder_guardian\", \"minecraft:player\", \"botania:*\", \"create:*\", \"ftbic:*\", \"immersiveengineering:*\", \"ae2:*\", \"littlelogistics:*\", \"tiab:*\"]"
                 )
                 .define("entityIgnoreList", defaultIgnoreList);
+
+        minPlayers = BUILDER.comment("Minimum number of players before mod is enabled")
+                .define("minPlayers", 2);
 
 
         BUILDER.pop();

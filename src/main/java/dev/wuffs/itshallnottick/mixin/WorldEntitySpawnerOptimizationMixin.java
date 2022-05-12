@@ -22,7 +22,7 @@ import java.util.Random;
 public class WorldEntitySpawnerOptimizationMixin {
     @Inject(at = @At("HEAD"), method = "getRandomSpawnMobAt", cancellable = true)
     private static void getRandomSpawnMobAt(ServerLevel level, StructureFeatureManager arg2, ChunkGenerator arg3, MobCategory arg4, Random random, BlockPos blockPos, CallbackInfoReturnable<Optional<MobSpawnSettings.SpawnerData>> cir) {
-        if (!Utils.isInClaimedChunk(level, blockPos) ) {
+        if (!Utils.isInClaimedChunk(level, blockPos) && Utils.enoughPlayers(level)) {
             int maxHeight = Config.maxEntitySpawnDistanceVertical.get();
             int maxDistanceSquare = Config.maxEntitySpawnDistanceHorizontal.get();
 

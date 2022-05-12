@@ -4,6 +4,7 @@ import dev.wuffs.itshallnottick.integration.FTBChunks;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
@@ -22,32 +23,17 @@ public class Utils {
         return false;
     }
 
-//    private static final Cache<ChunkPos, Boolean> isClaimedCache = CacheBuilder.newBuilder()
-//            .expireAfterWrite(Duration.ofSeconds(30))
-//            .build();
-//
-//    public static boolean isClaimedChunk(ChunkPos pos) {
-//        try {
-//            return isClaimedCache.get(pos, () -> {
-//                if (MapManager.inst == null) {
-//                    System.out.println("Skipped check, assumed false because Map Dim is not get setup");
-//                    return false;
-//                }
-//                MapDimension current = MapDimension.getCurrent();
-//                MapRegion region = current.getRegion(XZ.regionFromChunk(pos));
-//                if (region == null || region.getData() == null) {
-//                    System.out.println("Region data is null");
-//                    return false;
-//                }
-//                MapChunk mapChunk = region.getData().chunks.get(XZ.of(pos));
-//                System.out.printf("Mapchunk is null? xz: %s, %s, %s, %b, %s%n",  XZ.regionFromChunk(pos), XZ.of(pos), pos, mapChunk == null, region.getData().chunks.keySet());
-//                return mapChunk != null && mapChunk.claimedDate != null;
-//            });
-//        } catch (ExecutionException e) {
-//            isClaimedCache.invalidate(pos);
-//            return false;
-//        }
-//    }
+    public static boolean enoughPlayers(Level level) {
+        if (level.isClientSide){
+            return false;
+        }
+        MinecraftServer server = level.getServer();
+        if (server != null) {
+            return server.getPlayerList().getPlayerCount() > Config.minPlayers.get();
+        } else {
+            return false;
+        }
+    }
 
     public static boolean isNearPlayer(Level level, BlockPos blockPos, int maxHeight, int maxDistanceSquare) {
         return isNearPlayerInternal(level, blockPos.getX(), blockPos.getY(), blockPos.getZ(), maxHeight, maxDistanceSquare, false);
