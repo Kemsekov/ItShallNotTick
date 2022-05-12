@@ -29,7 +29,7 @@ public class Utils {
         }
         MinecraftServer server = level.getServer();
         if (server != null) {
-            return server.getPlayerList().getPlayerCount() > Config.minPlayers.get();
+            return server.getPlayerList().getPlayerCount() >= Config.minPlayers.get();
         } else {
             return false;
         }
