@@ -19,7 +19,9 @@ public class TickOptimizer {
     public static void entityTicking(Consumer<Entity> consumer, Entity entity, Level level, Random random){
 
         if (!Utils.enoughPlayers(level)){
+            System.out.println("Not enough players");
             handleGuardEntityTick(consumer, entity);
+            return;
         }
 
         if (Utils.isIgnoredEntity(entity)) {

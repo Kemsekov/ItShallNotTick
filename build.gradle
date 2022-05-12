@@ -106,6 +106,7 @@ dependencies {
 //    modRuntimeOnly "mezz.jei:jei-1.18.2:${jei_version}"
 
     modImplementation "dev.ftb.mods:ftb-chunks-forge:1802.3.6-build.142"
+    modRuntimeOnly "curse.maven:oauth-513857:3694377"
 }
 
 processResources {
