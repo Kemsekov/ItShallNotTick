@@ -1,5 +1,5 @@
 plugins {
-    id "dev.architectury.loom" version "0.11.0-SNAPSHOT"
+    id "dev.architectury.loom" version "0.12.0-SNAPSHOT"
     id "maven-publish"
     id "com.matthewprenger.cursegradle" version "1.4.0"
 }
@@ -52,8 +52,8 @@ dependencies {
 
     forge "net.minecraftforge:forge:${project.forge_version}"
 
-    modImplementation "dev.ftb.mods:ftb-chunks-forge:1802.3.6-build.142"
-    modRuntimeOnly "curse.maven:oauth-513857:3694377"
+    modCompileOnly "dev.ftb.mods:ftb-chunks-forge:1802.3.6-build.142"
+//    modRuntimeOnly "curse.maven:oauth-513857:3694377"
 }
 
 processResources {
@@ -113,7 +113,7 @@ if (ENV.CURSE_DEPLOY) {
         apiKey = ENV.CURSE_DEPLOY
         project {
             id = project.curseforge_id
-            releaseType = "release"
+            releaseType = "alpha"
             addGameVersion "Forge"
             addGameVersion "${minecraft_version}"
             addGameVersion "Java 17"

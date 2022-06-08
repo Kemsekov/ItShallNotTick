@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[40,)"
+loaderVersion = "[41,)"
 license = "MIT"
 
  issueTrackerURL="https://github.com/nanite/ItShallNotTick/issues" #optional
@@ -19,13 +19,13 @@ It Shall Not Tick (ISNT) is a performance enhancing mod that limits entity ticki
 [[dependencies.itshallnottick]]
 modId = "forge"
 mandatory = true
-versionRange = "[40,)"
+versionRange = "[41,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.itshallnottick]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.18.2,)"
+versionRange = "[1.19,)"
 ordering = "NONE"
 side = "BOTH"

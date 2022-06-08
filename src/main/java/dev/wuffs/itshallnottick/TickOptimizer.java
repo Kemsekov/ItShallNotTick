@@ -4,6 +4,7 @@ import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
 import net.minecraft.core.BlockPos;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -11,12 +12,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.timings.TimeTracker;
 
-import java.util.Random;
 import java.util.function.Consumer;
 
 public class TickOptimizer {
 
-    public static void entityTicking(Consumer<Entity> consumer, Entity entity, Level level, Random random){
+    public static void entityTicking(Consumer<Entity> consumer, Entity entity, Level level, RandomSource random){
 
         if (!Utils.enoughPlayers(level)){
             handleGuardEntityTick(consumer, entity);

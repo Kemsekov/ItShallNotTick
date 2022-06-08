@@ -2,6 +2,7 @@ package dev.wuffs.itshallnottick.mixin;
 
 
 import dev.wuffs.itshallnottick.TickOptimizer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Final;
@@ -9,7 +10,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
-import java.util.Random;
 import java.util.function.Consumer;
 
 
@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 public abstract class EntityTickMixin {
     @Shadow
     @Final
-    public Random random;
+    public RandomSource random;
 
     /**
      * @reason tps

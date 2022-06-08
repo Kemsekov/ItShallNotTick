@@ -10,6 +10,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
@@ -109,7 +110,7 @@ public class Utils {
 
         var entityType = entity.getType();
         return isIgnored.computeIfAbsent(entityType, (et) -> {
-            var entityRegName = entityType.getRegistryName();
+            var entityRegName = ForgeRegistries.ENTITIES.getKey(entityType).toString();
             if (entityRegName == null) {
                 return false;
             }
