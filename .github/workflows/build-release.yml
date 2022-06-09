@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 30 # Gets the last 30 commits so the changelog might work
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
@@ -25,9 +27,3 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew build publish curseforge --stacktrace --no-daemon
-      - name: Release to Github
-        uses: softprops/action-gh-release@v1
-        with:
-          generate_release_notes: true
-          body_path: ./CHANGELOG.md
-          files: build/libs/*.jar
