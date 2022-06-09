@@ -113,7 +113,7 @@ if (ENV.CURSE_DEPLOY) {
         apiKey = ENV.CURSE_DEPLOY
         project {
             id = project.curseforge_id
-            releaseType = "alpha"
+            releaseType = "release"
             addGameVersion "Forge"
             addGameVersion "${minecraft_version}"
             addGameVersion "Java 17"
