@@ -52,7 +52,7 @@ dependencies {
 
     forge "net.minecraftforge:forge:${project.forge_version}"
 
-    modCompileOnly "dev.ftb.mods:ftb-chunks-forge:1802.3.6-build.142"
+    modImplementation "dev.ftb.mods:ftb-chunks-forge:1900.3.7-build.148"
 //    modRuntimeOnly "curse.maven:oauth-513857:3694377"
 }
 
