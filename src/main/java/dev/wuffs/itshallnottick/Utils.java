@@ -110,7 +110,7 @@ public class Utils {
 
         var entityType = entity.getType();
         return isIgnored.computeIfAbsent(entityType, (et) -> {
-            var entityRegName = ForgeRegistries.ENTITIES.getKey(entityType).toString();
+            var entityRegName = ForgeRegistries.ENTITY_TYPES.getKey(entityType).toString();
             if (entityRegName == null) {
                 return false;
             }
