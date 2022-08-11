@@ -1,7 +1,7 @@
 package dev.wuffs.itshallnottick.mixin;
 
 
-import dev.wuffs.itshallnottick.TickOptimizer;
+import net.minecraft.entity.TickOptimizer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;

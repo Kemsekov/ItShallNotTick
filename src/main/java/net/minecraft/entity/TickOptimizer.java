@@ -1,5 +1,7 @@
-package dev.wuffs.itshallnottick;
+package net.minecraft.entity;
 
+import dev.wuffs.itshallnottick.Config;
+import dev.wuffs.itshallnottick.Utils;
 import net.minecraft.CrashReport;
 import net.minecraft.CrashReportCategory;
 import net.minecraft.ReportedException;
