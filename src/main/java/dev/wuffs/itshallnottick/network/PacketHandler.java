@@ -28,5 +28,6 @@ public class PacketHandler {
     public static void regsiter() {
         int id = 0;
         HANDLER.registerMessage(id, SendClaimedChunksPacket.class, SendClaimedChunksPacket::encode, SendClaimedChunksPacket::new, SendClaimedChunksPacket::handle);
+        HANDLER.registerMessage(id, SendMinPlayerPacket.class, SendMinPlayerPacket::encode, SendMinPlayerPacket::new, SendMinPlayerPacket::handle);
     }
 }
