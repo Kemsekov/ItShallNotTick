@@ -5,6 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
@@ -28,6 +29,14 @@ public class Config {
 
     public static ForgeConfigSpec.ConfigValue<List<String>> entityIgnoreList;
     public static ForgeConfigSpec.ConfigValue<Integer> minPlayers;
+
+    public static ConfigValue<Integer> tpsThreshold;
+
+    public static ConfigValue<Integer> timeIntervalsMs;
+
+    public static ConfigValue<Integer> intervals;
+
+    public static ConfigValue<Float> maxCpuUsagePerEntityType;
 
     @SubscribeEvent
     public static void onLoad(ModConfigEvent.Loading configEvent) {
@@ -72,8 +81,21 @@ public class Config {
         defaultIgnoreList.add("minecraft:player");
 
         BUILDER.comment("General settings").push(CATEGORY_GENERAL);
+        
         maxEntitySpawnDistanceHorizontal = BUILDER.comment("Maximum distance from player (horizontally) for entity spawning check [Squared, Default 64^2]")
                 .define("maxEntitySpawnDistanceHorizontal", 4096);
+        
+        tpsThreshold = BUILDER.comment("After server TPS goes below this value EntityCpuTimeOptimizer start to work")
+                .define("tpsThreshold", 15);
+        
+        timeIntervalsMs=BUILDER.comment("How long to collect statistics for single time interval. By default is one second.")
+                .define("timeIntervalsMs", 1000);
+        
+        intervals=BUILDER.comment("How long to collect statistics for single time interval. By default is one second.")
+                .define("intervals", 4);
+        
+        maxCpuUsagePerEntityType=BUILDER.comment("How much cpu-time each entity of some type can use when server is overloaded. In percents [0;1]")
+                .define("maxCpuUsagePerEntityType", 0.2f);
 
         maxEntitySpawnDistanceVertical = BUILDER.comment("Maximum distance from player (vertically) for entity spawning check [Raw, Default 32]")
                 .define("maxEntitySpawnDistanceVertical", 32);
