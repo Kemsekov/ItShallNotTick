@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.item.TooltipFlag.Default;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
@@ -167,8 +168,12 @@ public class EntityCpuTimeOptimizer {
         if(!SERVER_OVERLOADED) return true;
 
         var entityType = entity.getType();
-        var cpuUsage=entityCpuUsage.get(entityType);
-        return cpuUsage.CpuUsagePercentage<=MAX_CPU_USAGE_PER_ENTITY_TYPE;
+        var currentEntityCpuUsage = entityCpuUsage.get(entityType);
+        if(currentEntityCpuUsage == null){
+            currentEntityCpuUsage = _default();
+            entityCpuUsage.put(entityType,currentEntityCpuUsage);
+        }
+        return currentEntityCpuUsage.CpuUsagePercentage<=MAX_CPU_USAGE_PER_ENTITY_TYPE;
     }
     EntityCpuUsageData _default(){
         var value = new EntityCpuUsageData();
@@ -184,7 +189,12 @@ public class EntityCpuTimeOptimizer {
         var entityType = entity.getType();
         long startTime = System.nanoTime();
         tick.call();
-        var currentEntityCpuUsage = entityCpuUsage.getOrDefault(entityType, _default());
+        var currentEntityCpuUsage = entityCpuUsage.get(entityType);
+        if(currentEntityCpuUsage == null){
+            currentEntityCpuUsage = _default();
+            entityCpuUsage.put(entityType,currentEntityCpuUsage);
+        }
+        entityCpuUsage.put(entityType,currentEntityCpuUsage);
         long oldTime = currentEntityCpuUsage.TickCpuTime;
         
         currentEntityCpuUsage.TickCpuTime=oldTime+startTime-System.nanoTime();

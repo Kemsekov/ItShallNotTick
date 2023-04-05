@@ -26,6 +26,10 @@ public abstract class EntityTickMixin {
     EntityCpuTimeOptimizer entityCpuTimeOptimizer;
 
     public EntityTickMixin(){
+        Init();
+    }
+    void Init(){
+        if(entityCpuTimeOptimizer != null) return;
         entityCpuTimeOptimizer = new EntityCpuTimeOptimizer();
         
         entityCpuTimeOptimizer.INTERVALS=Config.intervals.get();
@@ -41,7 +45,7 @@ public abstract class EntityTickMixin {
      */
     @Overwrite
     public void guardEntityTick(Consumer<Entity> consumer, Entity entity) {
-        
+        Init();
         Level level = ((Level) (Object) this);
         if(this.entityCpuTimeOptimizer.canTick(consumer, entity, level)){
             entityCpuTimeOptimizer.passTick(
