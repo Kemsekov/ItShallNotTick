@@ -92,7 +92,7 @@ public class Config {
                 .define("timeIntervalsMs", 1000);
         
         intervals=BUILDER.comment("How long to collect statistics for single time interval. By default is one second.")
-                .define("intervals", 4);
+                .define("intervals", 6);
         
         maxCpuUsagePerEntityType=BUILDER.comment("How much cpu-time each entity of some type can use when server is overloaded. In percents [0;1]")
                 .define("maxCpuUsagePerEntityType", 0.2f);

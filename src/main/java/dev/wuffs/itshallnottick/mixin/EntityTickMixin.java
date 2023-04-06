@@ -1,6 +1,5 @@
 package dev.wuffs.itshallnottick.mixin;
 
-
 import dev.wuffs.itshallnottick.Config;
 import dev.wuffs.itshallnottick.EntityCpuTimeOptimizer;
 import dev.wuffs.itshallnottick.TickOptimizer;
@@ -17,7 +16,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.Random;
 import java.util.function.Consumer;
 
-
 @Mixin(value = Level.class)
 public abstract class EntityTickMixin {
     @Shadow
@@ -25,20 +23,23 @@ public abstract class EntityTickMixin {
     public Random random;
     EntityCpuTimeOptimizer entityCpuTimeOptimizer;
 
-    public EntityTickMixin(){
+    public EntityTickMixin() {
         Init();
     }
-    void Init(){
-        if(entityCpuTimeOptimizer != null) return;
-        entityCpuTimeOptimizer = new EntityCpuTimeOptimizer();
-        
-        entityCpuTimeOptimizer.INTERVALS=Config.intervals.get();
-        entityCpuTimeOptimizer.MAX_CPU_USAGE_PER_ENTITY_TYPE=Config.maxCpuUsagePerEntityType.get();
-        entityCpuTimeOptimizer.TIME_INTERVAL_MS=Config.timeIntervalsMs.get();
-        entityCpuTimeOptimizer.TPS_THRESHOLD=Config.tpsThreshold.get();
 
+    void Init() {
+        if (entityCpuTimeOptimizer != null)
+            return;
+        entityCpuTimeOptimizer = new EntityCpuTimeOptimizer();
+
+        entityCpuTimeOptimizer.INTERVALS = Config.intervals.get();
+        entityCpuTimeOptimizer.MAX_CPU_USAGE_PER_ENTITY_TYPE = Config.maxCpuUsagePerEntityType.get();
+        entityCpuTimeOptimizer.TIME_INTERVAL_MS = Config.timeIntervalsMs.get();
+        entityCpuTimeOptimizer.TPS_THRESHOLD = Config.tpsThreshold.get();
+        
         entityCpuTimeOptimizer.startBackgroundTask();
     }
+
     /**
      * @reason tps
      * @author Team Deus Vult
@@ -47,11 +48,8 @@ public abstract class EntityTickMixin {
     public void guardEntityTick(Consumer<Entity> consumer, Entity entity) {
         Init();
         Level level = ((Level) (Object) this);
-        if(this.entityCpuTimeOptimizer.canTick(consumer, entity, level)){
-            entityCpuTimeOptimizer.passTick(
+        entityCpuTimeOptimizer.passTick(
                 entity,
-                ()->TickOptimizer.entityTicking(consumer, entity, level, random)
-            );
-        }
+                () -> TickOptimizer.entityTicking(consumer, entity, level, random));
     }
 }
