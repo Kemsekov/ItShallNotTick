@@ -120,7 +120,7 @@ public class EntityCpuTimeOptimizer {
         while(true){
                 try{
                     Thread.sleep(TIME_INTERVAL_MS);
-                    logDebugInfo();
+                    // logDebugInfo();
                     SERVER_OVERLOADED=isServerOverloaded();
                     if(!SERVER_OVERLOADED) continue;
                     this.runningBackgroundTask=true;
@@ -185,7 +185,11 @@ public class EntityCpuTimeOptimizer {
         TOTAL_TIME_IN_LAST_INTERVALS/=2;
         for(var key : entityCpuUsage.keySet()){
             var currentEntityCpuUsage = entityCpuUsage.get(key);
-            currentEntityCpuUsage.CpuUsagePercentage += computePercentageOfCpuUsage(currentEntityCpuUsage);
+            var computedCpuUsage = computePercentageOfCpuUsage(currentEntityCpuUsage);
+            if(computedCpuUsage==0){
+                entityCpuUsage.remove(key);
+            }
+            currentEntityCpuUsage.CpuUsagePercentage += computedCpuUsage;
             currentEntityCpuUsage.CpuUsagePercentage /=2;
         }
     }
@@ -225,7 +229,7 @@ public class EntityCpuTimeOptimizer {
         // more resources than it should be taking
         if(currentEntityCpuUsage.CpuUsagePercentage>MAX_CPU_USAGE_PER_ENTITY_TYPE)
             return false;
-        return true;
+        return Rand.nextFloat()<=1-currentEntityCpuUsage.CpuUsagePercentage;
     }
     
     EntityCpuUsageData _default(){
