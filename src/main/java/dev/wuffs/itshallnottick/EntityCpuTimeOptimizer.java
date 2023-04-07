@@ -7,6 +7,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.Arrays;
@@ -60,6 +61,17 @@ public class EntityCpuTimeOptimizer {
     public interface Action{
         void call();
     }
+    public static EntityCpuTimeOptimizer Create(Level level){
+        var entityCpuTimeOptimizer = new EntityCpuTimeOptimizer(level);
+
+        entityCpuTimeOptimizer.INTERVALS = Config.intervals.get();
+        entityCpuTimeOptimizer.MAX_CPU_USAGE_PER_ENTITY_TYPE = Config.maxCpuUsagePerEntityType.get();
+        entityCpuTimeOptimizer.TIME_INTERVAL_MS = Config.timeIntervalsMs.get();
+        entityCpuTimeOptimizer.TPS_THRESHOLD = Config.tpsThreshold.get();
+        
+        entityCpuTimeOptimizer.startBackgroundTask();
+        return entityCpuTimeOptimizer;
+    }
     /**
      * keeps total cpu time in last intervals
      */
@@ -96,8 +108,11 @@ public class EntityCpuTimeOptimizer {
 
     MinecraftServer server;
 
+    Level level;
+
     
-    public EntityCpuTimeOptimizer(){
+    public EntityCpuTimeOptimizer(Level level){
+        this.level=level;
         this.Rand= new Random();
         this.entityCpuUsage = new ConcurrentHashMap<Object,EntityCpuUsageData>();
         this.server=ServerLifecycleHooks.getCurrentServer();
@@ -124,7 +139,7 @@ public class EntityCpuTimeOptimizer {
         playerList.broadcastMessage(chatMessage, ChatType.SYSTEM, null);
     }
     void logDebugInfo() {
-        
+        broadcastToAllPlayers("Level is "+level);
         broadcastToAllPlayers("TPS is "+getTps());
         broadcastToAllPlayers("Is optimizer running "+SERVER_OVERLOADED);
         broadcastToAllPlayers("Total time "+TOTAL_TIME_IN_LAST_INTERVALS);
@@ -175,12 +190,8 @@ public class EntityCpuTimeOptimizer {
         }
     }
     public double getTps(){
-        double tickTime = 0;
-        for (var key : server.getAllLevels()) {
-            var maxTickTime=Arrays.stream(server.getTickTime(key.dimension())).max().getAsLong();
-            tickTime = Math.max(tickTime,maxTickTime);
-        }
-        return 1000000000.0 / tickTime;
+        var maxTickTime=Arrays.stream(server.getTickTime(level.dimension())).max().getAsLong();
+        return 1000000000.0 / maxTickTime;
     }
     /**
      * @return true if server can't keep up -> server tps is bigger than TPS_THRESHOLD
