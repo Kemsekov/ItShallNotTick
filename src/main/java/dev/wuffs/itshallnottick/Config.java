@@ -88,11 +88,11 @@ public class Config {
         tpsThreshold = BUILDER.comment("After server TPS goes below this value EntityCpuTimeOptimizer start to work")
                 .define("tpsThreshold", 15);
         
-        timeIntervalsMs=BUILDER.comment("How long to collect statistics for single time interval. By default is one second.")
-                .define("timeIntervalsMs", 1000);
+        timeIntervalsMs=BUILDER.comment("How long to collect statistics for single time interval.")
+                .define("timeIntervalsMs", 200);
         
-        intervals=BUILDER.comment("How long to collect statistics for single time interval. By default is one second.")
-                .define("intervals", 6);
+        intervals=BUILDER.comment("How many intervals to count. If your timeIntervalsMs is 1000 and intervals is 4, it means mod gonna take statistics for 4 seconds for each entity")
+                .define("intervals", 5);
         
         maxCpuUsagePerEntityType=BUILDER.comment("How much cpu-time each entity of some type can use when server is overloaded. In percents [0;1]")
                 .define("maxCpuUsagePerEntityType", 0.2f);
