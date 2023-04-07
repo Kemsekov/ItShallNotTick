@@ -6,17 +6,16 @@ import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.util.Arrays;
 import java.util.Random;
+
 // Abstract:
 // we accept Zombie entity for ticking, we check if server can't keep up,
 // if it is, we get percent of cpu usage for Zombie-type entities from last N time-intervals.
 // if this percent of cpu usage is bigger than some threshold, we just skip this entity ticking.
-import java.util.UUID;
 
 // create a map for each entity type, which contains a cpu-time for last N
 // compute time intervals. In this explanation compute time interval is second.
@@ -50,10 +49,6 @@ import java.util.UUID;
 // And if our server is under heavy load and can't keep up, we can balance out
 // how many ticks for each entity we need to keep in order to reduce lag.
 
-// P.S
-// If in the last second there were no calling over entity(for example entity Zombie)
-// then it's value in table of cpu-time usage is gonna be Zombie:0
-// in that case we just remove this key-value from table to reduce ram usage.
 
 
 public class EntityCpuTimeOptimizer {
@@ -175,7 +170,7 @@ public class EntityCpuTimeOptimizer {
         TOTAL_TIME_IN_LAST_INTERVALS/=2;
         for(var key : entityCpuUsage.keySet()){
             var currentEntityCpuUsage = entityCpuUsage.get(key);
-            currentEntityCpuUsage.CpuUsagePercentage += computePercentOfCpuUsage(currentEntityCpuUsage);
+            currentEntityCpuUsage.CpuUsagePercentage += computePercentageOfCpuUsage(currentEntityCpuUsage);
             currentEntityCpuUsage.CpuUsagePercentage /=2;
         }
     }
@@ -195,12 +190,9 @@ public class EntityCpuTimeOptimizer {
         return getTps()<=TPS_THRESHOLD;
     }
 
-    float computePercentOfCpuUsage(EntityCpuUsageData cpuUsageData){
+    float computePercentageOfCpuUsage(EntityCpuUsageData cpuUsageData){
         if(TOTAL_TIME_IN_LAST_INTERVALS==0) return cpuUsageData.CpuUsagePercentage;
-        var previous = cpuUsageData.CpuUsagePercentage;
         var cpuUsageOverLastIntervals = Arrays.stream(cpuUsageData.LastNTimeIntervals).reduce((a,b)->a+b).get();
-        var newCpuTime = cpuUsageOverLastIntervals*1.0f/TOTAL_TIME_IN_LAST_INTERVALS;
-        if(newCpuTime==0) return previous;
         return cpuUsageOverLastIntervals*1.0f/TOTAL_TIME_IN_LAST_INTERVALS;
     }
 
@@ -218,7 +210,10 @@ public class EntityCpuTimeOptimizer {
             currentEntityCpuUsage = _default();
             entityCpuUsage.put(entityType,currentEntityCpuUsage);
         }
+        // as lover-bound of cpu usage we skip ticks for some entity iff it's takes 
+        // more resources than it should be taking
         if(currentEntityCpuUsage.CpuUsagePercentage>MAX_CPU_USAGE_PER_ENTITY_TYPE)
+            //proportionally to cpu usage of current entity the more it loads cpu, the more ticks we skip
             return Rand.nextFloat()<=1-currentEntityCpuUsage.CpuUsagePercentage;
         return true;
     }
