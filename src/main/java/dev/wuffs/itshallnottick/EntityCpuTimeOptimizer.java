@@ -186,10 +186,10 @@ public class EntityCpuTimeOptimizer {
         for(var key : entityCpuUsage.keySet()){
             var currentEntityCpuUsage = entityCpuUsage.get(key);
             var computedCpuUsage = computePercentageOfCpuUsage(currentEntityCpuUsage);
-            if(computedCpuUsage==0){
+            if(computedCpuUsage==0 && currentEntityCpuUsage.CpuUsagePercentage==0){
                 entityCpuUsage.remove(key);
             }
-            currentEntityCpuUsage.CpuUsagePercentage += computedCpuUsage;
+            currentEntityCpuUsage.CpuUsagePercentage += computePercentageOfCpuUsage(currentEntityCpuUsage);
             currentEntityCpuUsage.CpuUsagePercentage /=2;
         }
     }
