@@ -120,7 +120,7 @@ public class EntityCpuTimeOptimizer {
         while(true){
                 try{
                     Thread.sleep(TIME_INTERVAL_MS);
-                    // logDebugInfo();
+                    logDebugInfo();
                     SERVER_OVERLOADED=isServerOverloaded();
                     if(!SERVER_OVERLOADED) continue;
                     this.runningBackgroundTask=true;
@@ -224,8 +224,7 @@ public class EntityCpuTimeOptimizer {
         // as lover-bound of cpu usage we skip ticks for some entity iff it's takes 
         // more resources than it should be taking
         if(currentEntityCpuUsage.CpuUsagePercentage>MAX_CPU_USAGE_PER_ENTITY_TYPE)
-            //proportionally to cpu usage of current entity the more it loads cpu, the more ticks we skip
-            return Rand.nextFloat()<=1-currentEntityCpuUsage.CpuUsagePercentage;
+            return false;
         return true;
     }
     
