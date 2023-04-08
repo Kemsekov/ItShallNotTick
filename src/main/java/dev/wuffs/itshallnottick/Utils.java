@@ -4,6 +4,8 @@ import dev.wuffs.itshallnottick.integration.FTBChunks;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.ChatType;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -14,7 +16,11 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class Utils {
-
+    public static void broadcastToAllPlayers(String message, MinecraftServer server) {
+        var playerList = server.getPlayerList();
+        TextComponent chatMessage = new TextComponent(message);
+        playerList.broadcastMessage(chatMessage, ChatType.SYSTEM, null);
+    }
     public static boolean isInClaimedChunk(Level level, BlockPos blockPos) {
         if (ItShallNotTick.isFTBChunksLoaded) {
             return FTBChunks.isInClaimedChunk(level, blockPos);

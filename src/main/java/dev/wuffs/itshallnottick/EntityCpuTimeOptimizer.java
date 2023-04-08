@@ -119,13 +119,13 @@ public class EntityCpuTimeOptimizer {
         this.backgroundTasks = new Thread(()->{
         while(true){
                 try{
-                    Thread.sleep(TIME_INTERVAL_MS);
                     // logDebugInfo();
                     SERVER_OVERLOADED=isServerOverloaded();
                     if(!SERVER_OVERLOADED) continue;
                     this.runningBackgroundTask=true;
                     shiftTimeIntervals();
                     this.runningBackgroundTask=false;
+                    Thread.sleep(TIME_INTERVAL_MS);
                 }
                 catch(Exception e){
 
@@ -134,9 +134,7 @@ public class EntityCpuTimeOptimizer {
         });
     }
     void broadcastToAllPlayers(String message) {
-        var playerList = server.getPlayerList();
-        TextComponent chatMessage = new TextComponent(message);
-        playerList.broadcastMessage(chatMessage, ChatType.SYSTEM, null);
+        Utils.broadcastToAllPlayers(message, server);
     }
     void logDebugInfo() {
         broadcastToAllPlayers("Level is "+level);
