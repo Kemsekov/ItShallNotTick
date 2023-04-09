@@ -92,7 +92,7 @@ public class Config {
                 .define("timeIntervalsMs", 200);
         
         intervals=BUILDER.comment("How many intervals to count. If your timeIntervalsMs is 1000 and intervals is 4, it means mod gonna take statistics for 4 seconds for each entity")
-                .define("intervals", 5);
+                .define("intervals", 12);
         
         maxCpuUsagePerEntityType=BUILDER.comment("How much cpu-time each entity of some type can use when server is overloaded. In percents [0;1]")
                 .define("maxCpuUsagePerEntityType", 0.2f);

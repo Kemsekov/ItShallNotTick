@@ -31,7 +31,7 @@ public abstract class EntityTickMixin {
         if (entityCpuTimeOptimizers != null)
             return;
         entityCpuTimeOptimizers = new HashMap<>();
-        RunUnusedOptimizerRemoval();
+        // RunUnusedOptimizerRemoval();
     }
     EntityCpuTimeOptimizer getOptimizer(Level level){
         var optimizer = entityCpuTimeOptimizers.get(level);
