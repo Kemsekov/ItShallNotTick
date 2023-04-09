@@ -13,9 +13,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Utils {
+    public static double getTps(MinecraftServer server, Level level){
+        var maxTickTime=Arrays.stream(server.getTickTime(level.dimension())).max().getAsLong();
+        return 1000000000.0 / maxTickTime;
+    }
     public static void broadcastToAllPlayers(String message, MinecraftServer server) {
         var playerList = server.getPlayerList();
         TextComponent chatMessage = new TextComponent(message);
