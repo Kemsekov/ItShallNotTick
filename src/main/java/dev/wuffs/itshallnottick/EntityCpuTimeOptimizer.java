@@ -146,7 +146,8 @@ public class EntityCpuTimeOptimizer {
                 }
             }
         });
-        startLoggingDebugInfo();
+        if(Config.logDebugInfo.get())
+            startLoggingDebugInfo();
     }
 
     void startLoggingDebugInfo() {
@@ -183,8 +184,11 @@ public class EntityCpuTimeOptimizer {
         broadcastToAllPlayers("Keys " + entityCpuUsage.keySet().size());
         Object maxLoadEntity = null;
         EntityCpuUsageData cpuUsage = null;
+        var totalCpuUsagePercents=0.0;
         for (var key : entityCpuUsage.keySet()) {
             var load = entityCpuUsage.get(key);
+            if(cpuUsage!=null)
+                totalCpuUsagePercents+=cpuUsage.CpuUsagePercentage;
             if (cpuUsage == null || cpuUsage.TickCpuTime < load.TickCpuTime) {
                 cpuUsage = load;
                 maxLoadEntity = key;
@@ -195,6 +199,7 @@ public class EntityCpuTimeOptimizer {
         broadcastToAllPlayers("Max load entity is " + maxLoadEntity);
         broadcastToAllPlayers("Cpu % " + cpuUsage.CpuUsagePercentage);
         broadcastToAllPlayers("Takes " + cpuUsage.TickCpuTime);
+        broadcastToAllPlayers("Total cpuUsage in percents(must be 1) " + totalCpuUsagePercents);
         var intervals = "[";
         for (var i : cpuUsage.LastNTimeIntervals) {
             intervals += " " + i;

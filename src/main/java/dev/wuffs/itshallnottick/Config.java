@@ -35,6 +35,7 @@ public class Config {
     public static ConfigValue<Integer> timeIntervalsMs;
 
     public static ConfigValue<Integer> intervals;
+    public static ConfigValue<Boolean> logDebugInfo;
 
     public static ConfigValue<Float> maxCpuUsagePerEntityType;
 
@@ -81,7 +82,7 @@ public class Config {
         defaultIgnoreList.add("minecraft:player");
 
         BUILDER.comment("General settings").push(CATEGORY_GENERAL);
-        
+     
         maxEntitySpawnDistanceHorizontal = BUILDER.comment("Maximum distance from player (horizontally) for entity spawning check [Squared, Default 64^2]")
                 .define("maxEntitySpawnDistanceHorizontal", 4096);
         
@@ -118,7 +119,8 @@ public class Config {
         minPlayers = BUILDER.comment("Minimum number of players before mod is enabled")
                 .define("minPlayers", 2);
 
-
+        logDebugInfo = BUILDER.comment("Show debug info into chat")
+                .define("logDebugInfo", false);
         BUILDER.pop();
 
         CONFIG = BUILDER.build();
