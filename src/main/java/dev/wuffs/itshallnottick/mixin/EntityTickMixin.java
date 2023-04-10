@@ -35,7 +35,7 @@ public abstract class EntityTickMixin {
     EntityCpuTimeOptimizer getOptimizer(Level level){
         var optimizer = entityCpuTimeOptimizers.get(level);
         if(optimizer==null){
-            optimizer = EntityCpuTimeOptimizer.Create(level);
+            optimizer = new EntityCpuTimeOptimizer(level);
             entityCpuTimeOptimizers.put(level, optimizer);
         }
         return optimizer;

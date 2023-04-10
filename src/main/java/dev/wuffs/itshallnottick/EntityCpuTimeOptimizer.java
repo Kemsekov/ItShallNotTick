@@ -52,15 +52,10 @@ import java.util.Random;
 
 public class EntityCpuTimeOptimizer {
     class EntityCpuUsageData {
-        Long[] LastNTimeIntervals;
         Long TickCpuTime = 0l;
-        float CpuUsagePercentage = 0;
+        Long TotalCpuTimeInLastIntervals = 0l;
 
         public EntityCpuUsageData(int INTERVALS) {
-            CpuUsagePercentage = 0;
-            LastNTimeIntervals = new Long[INTERVALS];
-            Arrays.fill(LastNTimeIntervals, 0l);
-            TickCpuTime = 0l;
         }
 
     }
@@ -69,29 +64,17 @@ public class EntityCpuTimeOptimizer {
         void call();
     }
 
-    public static EntityCpuTimeOptimizer Create(Level level) {
-        var entityCpuTimeOptimizer = new EntityCpuTimeOptimizer(level);
-
-        entityCpuTimeOptimizer.INTERVALS = Config.intervals.get();
-        entityCpuTimeOptimizer.MAX_CPU_USAGE_PER_ENTITY_TYPE = Config.maxCpuUsagePerEntityType.get();
-        entityCpuTimeOptimizer.TIME_INTERVAL_MS = Config.timeIntervalsMs.get();
-        entityCpuTimeOptimizer.TPS_THRESHOLD = Config.tpsThreshold.get();
-
-        entityCpuTimeOptimizer.startBackgroundTask();
-        return entityCpuTimeOptimizer;
-    }
-
     /**
      * keeps total cpu time in last intervals
      */
-    Long AVERAGE_TOTAL_TIME_IN_LAST_INTERVALS = 1l;
+    Long[] LAST_INTERVALS_CPU_TIME;
 
     boolean SERVER_OVERLOADED = false;
 
     /**
      * After server TPS goes below this value EntityCpuTimeOptimizer start to work
      */
-    public float TPS_THRESHOLD = 15;
+    public Integer TPS_THRESHOLD = 15;
 
     /**
      * How long to collect statistics for single time interval. By default is one
@@ -115,22 +98,30 @@ public class EntityCpuTimeOptimizer {
 
     Thread backgroundTasks;
 
-    boolean runningBackgroundTask;
+    boolean runningBackgroundTask = false;
 
     MinecraftServer server;
 
     Level level;
 
-    Long[] LastNTotalTimes;
+    private Long TOTAL_CPU_TIME = 0l;
+
+    private Thread logThread;
 
     public EntityCpuTimeOptimizer(Level level) {
-        this.level = level;
-        LastNTotalTimes = new Long[INTERVALS];
-        Arrays.fill(LastNTotalTimes, 0l);
 
+        this.INTERVALS = Config.intervals.get();
+        this.MAX_CPU_USAGE_PER_ENTITY_TYPE = Config.maxCpuUsagePerEntityType.get();
+        this.TIME_INTERVAL_MS = Config.timeIntervalsMs.get();
+        this.TPS_THRESHOLD = Config.tpsThreshold.get();
+        
+        this.level = level;
+        this.LAST_INTERVALS_CPU_TIME = new Long[INTERVALS];
+        Arrays.fill(LAST_INTERVALS_CPU_TIME, 0l);
         this.Rand = new Random();
         this.entityCpuUsage = new ConcurrentHashMap<Object, EntityCpuUsageData>();
-        this.server = ServerLifecycleHooks.getCurrentServer();
+        this.server = level.getServer();
+
         this.backgroundTasks = new Thread(() -> {
             while (true) {
                 try {
@@ -140,36 +131,38 @@ public class EntityCpuTimeOptimizer {
                         continue;
                     this.runningBackgroundTask = true;
                     shiftTimeIntervals();
+                    updateCpuUsage();
                     this.runningBackgroundTask = false;
                 } catch (Exception e) {
 
                 }
             }
         });
-        if(Config.logDebugInfo.get())
+        this.backgroundTasks.start();
+        if (Config.logDebugInfo.get())
             startLoggingDebugInfo();
     }
 
     void startLoggingDebugInfo() {
-        new Thread(() -> {
+        this.logThread = new Thread(() -> {
             while (true) {
                 try {
+                    Thread.sleep(3000);
                     logDebugInfo();
-                    Thread.sleep(2000);
                 } catch (Exception e) {
 
                 }
             }
-        }).start();
-        ;
+        });
+        this.logThread.start();
     }
 
     /**
-     * @return averaged total cpu time entities used on the level this optimizer is
+     * @return total cpu time entities used on the level this optimizer is
      *         created on for the last N time intervals
      */
-    public Long getAverageTotalCpuTime() {
-        return AVERAGE_TOTAL_TIME_IN_LAST_INTERVALS;
+    public Long getTotalCpuTime() {
+        return TOTAL_CPU_TIME;
     }
 
     void broadcastToAllPlayers(String message) {
@@ -177,18 +170,19 @@ public class EntityCpuTimeOptimizer {
     }
 
     void logDebugInfo() {
+        var divisor = 1000000;
         broadcastToAllPlayers("Level is " + level);
         broadcastToAllPlayers("TPS is " + Utils.getTps(server, level));
         broadcastToAllPlayers("Is optimizer running " + SERVER_OVERLOADED);
-        broadcastToAllPlayers("Average total time " + AVERAGE_TOTAL_TIME_IN_LAST_INTERVALS);
+        broadcastToAllPlayers("Total cpu time " + TOTAL_CPU_TIME / divisor);
         broadcastToAllPlayers("Keys " + entityCpuUsage.keySet().size());
         Object maxLoadEntity = null;
         EntityCpuUsageData cpuUsage = null;
-        var totalCpuUsagePercents=0.0;
+        var totalCpuUsagePercents = 0.0;
         for (var key : entityCpuUsage.keySet()) {
             var load = entityCpuUsage.get(key);
-            if(cpuUsage!=null)
-                totalCpuUsagePercents+=cpuUsage.CpuUsagePercentage;
+            if (cpuUsage != null)
+                totalCpuUsagePercents += cpuUsage.TickCpuTime;
             if (cpuUsage == null || cpuUsage.TickCpuTime < load.TickCpuTime) {
                 cpuUsage = load;
                 maxLoadEntity = key;
@@ -197,15 +191,15 @@ public class EntityCpuTimeOptimizer {
         if (cpuUsage == null)
             return;
         broadcastToAllPlayers("Max load entity is " + maxLoadEntity);
-        broadcastToAllPlayers("Cpu % " + cpuUsage.CpuUsagePercentage);
-        broadcastToAllPlayers("Takes " + cpuUsage.TickCpuTime);
-        broadcastToAllPlayers("Total cpuUsage in percents(must be 1) " + totalCpuUsagePercents);
-        var intervals = "[";
-        for (var i : cpuUsage.LastNTimeIntervals) {
-            intervals += " " + i;
-        }
-        intervals += "]";
-        broadcastToAllPlayers("Intervals : " + intervals);
+        // broadcastToAllPlayers("Cpu % " + cpuUsage.CpuUsagePercentage);
+        broadcastToAllPlayers("Takes " + cpuUsage.TickCpuTime / divisor);
+        broadcastToAllPlayers("Total cpuUsage in percents " + String.format("%.2f", totalCpuUsagePercents));
+        // var intervals = "[";
+        // for (var i : cpuUsage.LastNTimeIntervals) {
+        //     intervals += " " + i / divisor;
+        // }
+        // intervals += "]";
+        // broadcastToAllPlayers("Intervals : " + intervals);
     }
 
     public void startBackgroundTask() {
@@ -217,37 +211,32 @@ public class EntityCpuTimeOptimizer {
         for (var key : entityCpuUsage.keySet()) {
             var currentEntityCpuUsage = entityCpuUsage.get(key);
             var cpuTime = currentEntityCpuUsage.TickCpuTime;
-
-            var intervals = currentEntityCpuUsage.LastNTimeIntervals;
-            System.arraycopy(intervals, 1, intervals, 0, intervals.length - 1);
-            intervals[intervals.length - 1] = cpuTime;
-            currentEntityCpuUsage.TickCpuTime = 0l;
-            newTotalTime += Arrays.stream(intervals).reduce((a, b) -> a + b).get();
+            newTotalTime += cpuTime;
         }
-        System.arraycopy(LastNTotalTimes, 1, LastNTotalTimes, 0, LastNTotalTimes.length - 1);
-        LastNTotalTimes[LastNTotalTimes.length - 1] = newTotalTime;
 
-        AVERAGE_TOTAL_TIME_IN_LAST_INTERVALS += Arrays.stream(LastNTotalTimes).reduce((a, b) -> a + b).get()
-                / INTERVALS;
-        AVERAGE_TOTAL_TIME_IN_LAST_INTERVALS /= 2;
+        System.arraycopy(LAST_INTERVALS_CPU_TIME, 1, LAST_INTERVALS_CPU_TIME, 0, LAST_INTERVALS_CPU_TIME.length - 1);
+        LAST_INTERVALS_CPU_TIME[LAST_INTERVALS_CPU_TIME.length - 1] = newTotalTime;
 
+        TOTAL_CPU_TIME = Arrays.stream(LAST_INTERVALS_CPU_TIME).reduce((a, b) -> a + b).get()/INTERVALS;
+    }
+
+    private void updateCpuUsage() {
         for (var key : entityCpuUsage.keySet()) {
-            
+
             var currentEntityCpuUsage = entityCpuUsage.get(key);
             var computedCpuUsage = computePercentageOfCpuUsage(currentEntityCpuUsage);
-                if (computedCpuUsage == 0) {
-                    entityCpuUsage.remove(key);
-                }
-                // for the sake of more fluent cpu-usage transition for each entity I average
-                // their change
-                currentEntityCpuUsage.CpuUsagePercentage += computePercentageOfCpuUsage(currentEntityCpuUsage);
-                currentEntityCpuUsage.CpuUsagePercentage /= 2;
+            if (computedCpuUsage == 0) {
+                entityCpuUsage.remove(key);
+            }
+            // for the sake of more fluent cpu-usage transition for each entity I average
+            // their change
+            currentEntityCpuUsage.TickCpuTime = 0l;
         }
     }
 
     /**
      * @return true if server can't keep up -> server tps is bigger than
-     * TPS_THRESHOLD
+     *         TPS_THRESHOLD
      */
     public boolean isServerOverloaded() {
         // server is overloaded if in any of the world's levels tps goes below specified
@@ -256,10 +245,9 @@ public class EntityCpuTimeOptimizer {
     }
 
     float computePercentageOfCpuUsage(EntityCpuUsageData cpuUsageData) {
-        if (AVERAGE_TOTAL_TIME_IN_LAST_INTERVALS == 0)
-            return cpuUsageData.CpuUsagePercentage;
-        var cpuUsageOverLastIntervals = Arrays.stream(cpuUsageData.LastNTimeIntervals).reduce((a, b) -> a + b).get();
-        return cpuUsageOverLastIntervals * 1.0f / AVERAGE_TOTAL_TIME_IN_LAST_INTERVALS;
+        if (TOTAL_CPU_TIME == 0)
+            return 0;
+        return cpuUsageData.TickCpuTime * 1.0f / TOTAL_CPU_TIME;
     }
 
     EntityCpuUsageData getOrCreateEntityCpuUsageData(Object entityType) {
@@ -291,15 +279,19 @@ public class EntityCpuTimeOptimizer {
         }
         var entityType = entity.getType();
 
-            var currentEntityCpuUsage = getOrCreateEntityCpuUsageData(entityType);
+        var currentEntityCpuUsage = getOrCreateEntityCpuUsageData(entityType);
+        
+        var percentage = currentEntityCpuUsage.TickCpuTime*1.0f/TOTAL_CPU_TIME;
 
-            // as lover-bound of cpu usage we skip ticks for some entity iff it's takes
-            // more resources than it should be taking
-            if (currentEntityCpuUsage.CpuUsagePercentage > MAX_CPU_USAGE_PER_ENTITY_TYPE)
-                return false;
-            return Rand.nextFloat() <= 1 - currentEntityCpuUsage.CpuUsagePercentage;
+        // as lover-bound of cpu usage we skip ticks for some entity iff it's takes
+        // more resources than it should be taking
+        if (percentage > MAX_CPU_USAGE_PER_ENTITY_TYPE)
+            //if overloaded entity is not working at all it breaks game experience =(
+            if(currentEntityCpuUsage.TickCpuTime<5000000) return true;
+        else
+            return false;
+        return Rand.nextFloat() <= 1 - percentage;
     }
-
     /**
      * We wrap tick passes and measure time entity spent on ticking
      */
@@ -307,10 +299,10 @@ public class EntityCpuTimeOptimizer {
         if (!canTick(entity))
             return;
         var entityType = entity.getType();
-            var currentEntityCpuUsage = getOrCreateEntityCpuUsageData(entityType);
-            long startTime = System.nanoTime();
-            tick.call();
-            currentEntityCpuUsage.TickCpuTime += System.nanoTime() - startTime;
+        var currentEntityCpuUsage = getOrCreateEntityCpuUsageData(entityType);
+        long startTime = System.nanoTime();
+        tick.call();
+        currentEntityCpuUsage.TickCpuTime += System.nanoTime() - startTime;
     }
 
 }
