@@ -1,12 +1,9 @@
 package dev.wuffs.itshallnottick.mixin;
 
-import dev.wuffs.itshallnottick.Config;
 import dev.wuffs.itshallnottick.EntityCpuTimeOptimizer;
 import dev.wuffs.itshallnottick.TickOptimizer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.event.TickEvent.ServerTickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -40,7 +37,7 @@ public abstract class EntityTickMixin {
         }
         return optimizer;
     }
- 
+    
     /**
      * @reason tps
      * @author Team Deus Vult

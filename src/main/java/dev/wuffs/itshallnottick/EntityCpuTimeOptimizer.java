@@ -74,18 +74,18 @@ public class EntityCpuTimeOptimizer {
     /**
      * After server TPS goes below this value EntityCpuTimeOptimizer start to work
      */
-    public Integer TPS_THRESHOLD = 15;
+    public final Integer TPS_THRESHOLD;
 
     /**
      * How long to collect statistics for single time interval. By default is one
      * second.
      */
-    public long TIME_INTERVAL_MS = 1000;
+    public final long TIME_INTERVAL_MS;
 
     /**
      * How many time intervals to store for statistics
      */
-    public int INTERVALS = 6;
+    public final int INTERVALS;
 
     /**
      * How much cpu-time each entity of some type can use when server is overloaded.
@@ -104,9 +104,9 @@ public class EntityCpuTimeOptimizer {
 
     Level level;
 
-    private Long TOTAL_CPU_TIME = 0l;
+    Long TOTAL_CPU_TIME = 1l;
 
-    private Thread logThread;
+    Thread logThread;
 
     public EntityCpuTimeOptimizer(Level level) {
 
@@ -121,7 +121,15 @@ public class EntityCpuTimeOptimizer {
         this.Rand = new Random();
         this.entityCpuUsage = new ConcurrentHashMap<Object, EntityCpuUsageData>();
         this.server = level.getServer();
-
+        startBackgroundTasks();
+        
+    }
+    public void startBackgroundTasks(){
+        startStatisticsCollection();
+        startLoggingDebugInfo();
+    }
+    void startStatisticsCollection(){
+        if(this.backgroundTasks!=null && this.backgroundTasks.isAlive()) return;
         this.backgroundTasks = new Thread(() -> {
             while (true) {
                 try {
@@ -133,22 +141,23 @@ public class EntityCpuTimeOptimizer {
                     shiftTimeIntervals();
                     updateCpuUsage();
                     this.runningBackgroundTask = false;
+                    if(TOTAL_CPU_TIME==0) break;
                 } catch (Exception e) {
 
                 }
             }
         });
         this.backgroundTasks.start();
-        if (Config.logDebugInfo.get())
-            startLoggingDebugInfo();
     }
-
     void startLoggingDebugInfo() {
+        if(!Config.logDebugInfo.get()) return;
+        if(this.logThread!=null && this.logThread.isAlive()) return;
         this.logThread = new Thread(() -> {
             while (true) {
                 try {
                     Thread.sleep(3000);
                     logDebugInfo();
+                    if(TOTAL_CPU_TIME==0) break;
                 } catch (Exception e) {
 
                 }
@@ -201,10 +210,6 @@ public class EntityCpuTimeOptimizer {
         // }
         // intervals += "]";
         // broadcastToAllPlayers("Intervals : " + intervals);
-    }
-
-    public void startBackgroundTask() {
-        backgroundTasks.start();
     }
 
     void shiftTimeIntervals() {
@@ -304,6 +309,10 @@ public class EntityCpuTimeOptimizer {
         long startTime = System.nanoTime();
         tick.call();
         currentEntityCpuUsage.TickCpuTime += System.nanoTime() - startTime;
+        
+        //there is a chance that current entity cpu time optimizer is not working at all, we then
+        if(TOTAL_CPU_TIME==0)
+            startBackgroundTasks();
     }
-
+    
 }
