@@ -18,7 +18,7 @@ import java.util.List;
 
 public class Utils {
     public static double getTps(MinecraftServer server, Level level){
-        if(!server.isRunning()) return 0;
+        if(server==null || server.isShutdown()|| !server.isRunning()) return 0;
         var maxTickTime=Arrays.stream(server.getTickTime(level.dimension())).max().getAsLong();
         return 1000000000.0 / maxTickTime;
     }

@@ -133,17 +133,15 @@ public class EntityCpuTimeOptimizer {
         this.backgroundTasks = new Thread(() -> {
             while (true) {
                 try {
-                    SERVER_OVERLOADED = isServerOverloaded();
                     Thread.sleep(TIME_INTERVAL_MS);
+                    SERVER_OVERLOADED = isServerOverloaded();
                     if (!SERVER_OVERLOADED)
                         continue;
                     this.runningBackgroundTask = true;
                     shiftTimeIntervals();
                     updateCpuUsage();
                     this.runningBackgroundTask = false;
-                    if(TOTAL_CPU_TIME==0) break;
                 } catch (Exception e) {
-
                 }
             }
         });
@@ -157,7 +155,6 @@ public class EntityCpuTimeOptimizer {
                 try {
                     Thread.sleep(3000);
                     logDebugInfo();
-                    if(TOTAL_CPU_TIME==0) break;
                 } catch (Exception e) {
 
                 }
@@ -311,8 +308,6 @@ public class EntityCpuTimeOptimizer {
         currentEntityCpuUsage.TickCpuTime += System.nanoTime() - startTime;
         
         //there is a chance that current entity cpu time optimizer is not working at all, we then
-        if(TOTAL_CPU_TIME==0)
-            startBackgroundTasks();
     }
     
 }
