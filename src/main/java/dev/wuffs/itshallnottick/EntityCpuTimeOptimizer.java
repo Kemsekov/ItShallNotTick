@@ -188,6 +188,7 @@ public class EntityCpuTimeOptimizer {
                 maxLoadEntity = key;
             }
         }
+        totalCpuUsagePercents/=TOTAL_CPU_TIME;
         if (cpuUsage == null)
             return;
         broadcastToAllPlayers("Max load entity is " + maxLoadEntity);
