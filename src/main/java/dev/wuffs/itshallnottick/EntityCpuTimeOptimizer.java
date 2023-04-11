@@ -1,14 +1,11 @@
 package dev.wuffs.itshallnottick;
 
-import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.entity.LivingEntity;
 
-import java.util.Arrays;
-import java.util.Random;
 
 // Abstract:
 // we accept Zombie entity for ticking, we check if server can't keep up,
@@ -45,7 +42,7 @@ public class EntityCpuTimeOptimizer {
     LoadBalancer<Object> loadBalancer;
 
     public EntityCpuTimeOptimizer(Level level) {
-        this.loadBalancer = new LoadBalancer<Object>(Config.intervals.get(),Config.maxCpuUsagePerEntityType.get(),5);
+        this.loadBalancer = new LoadBalancer<Object>(Config.intervals.get(),Config.maxCpuUsagePerEntityType.get().floatValue(),5);
         this.TIME_INTERVAL_MS = Config.timeIntervalsMs.get();
         this.TPS_THRESHOLD = Config.tpsThreshold.get();
         this.level = level;
@@ -131,7 +128,7 @@ public class EntityCpuTimeOptimizer {
     }
 
     /**
-     * @return true if server can't keep up -> server tps is bigger than
+     * @return true if server can't keep up -> server tps is below than
      *         TPS_THRESHOLD
      */
     public boolean isServerOverloaded() {

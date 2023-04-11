@@ -37,7 +37,7 @@ public class Config {
     public static ConfigValue<Integer> intervals;
     public static ConfigValue<Boolean> logDebugInfo;
 
-    public static ConfigValue<Float> maxCpuUsagePerEntityType;
+    public static ConfigValue<Double> maxCpuUsagePerEntityType;
 
     @SubscribeEvent
     public static void onLoad(ModConfigEvent.Loading configEvent) {
@@ -96,7 +96,7 @@ public class Config {
                 .define("intervals", 8);
         
         maxCpuUsagePerEntityType=BUILDER.comment("How much cpu-time each entity of some type can use when server is overloaded. In percents [0;1]")
-                .define("maxCpuUsagePerEntityType", 0.2f);
+                .define("maxCpuUsagePerEntityType", 0.2);
 
         maxEntitySpawnDistanceVertical = BUILDER.comment("Maximum distance from player (vertically) for entity spawning check [Raw, Default 32]")
                 .define("maxEntitySpawnDistanceVertical", 32);

@@ -17,7 +17,7 @@ public class LoadBalancer<TEntity> {
         void call(TEntity entity);
     }
     /**
-     * How many time intervals to store for statistics
+     * How many shift intervals store for statistics collection
      */
     public final int INTERVALS;
 
