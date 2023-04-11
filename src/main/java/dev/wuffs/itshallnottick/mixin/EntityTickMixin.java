@@ -48,6 +48,6 @@ public abstract class EntityTickMixin {
         Level level = ((Level) (Object) this);
         getOptimizer(level).passTick(
                 entity,
-                () -> TickOptimizer.entityTicking(consumer, entity, level, random));
+                (e) -> TickOptimizer.entityTicking(consumer, entity, level, random));
     }
 }
