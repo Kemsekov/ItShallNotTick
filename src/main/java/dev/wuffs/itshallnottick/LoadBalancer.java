@@ -1,6 +1,9 @@
 package dev.wuffs.itshallnottick;
 
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.antlr.v4.parse.ANTLRParser.finallyClause_return;
+
 import java.util.Arrays;
 import java.util.Random;
 /**
@@ -10,6 +13,7 @@ import java.util.Random;
 public class LoadBalancer<TEntity> {
     class EntityCpuUsageData {
         Long TickCpuTime = 0l;
+        Long PreviousTickCpuTime = 0l;
         Long TotalCpuTimeInLastIntervals = 0l;
     }
 
@@ -26,7 +30,11 @@ public class LoadBalancer<TEntity> {
      * In percents [0;1]
      */
     public final float MAX_CPU_USAGE_PER_ENTITY_TYPE;
-    
+
+    /**
+     * Maximum cpu-time usage change per entity type between time - intervals
+     */
+    public final Float MAX_CHANGE_COEFFICIENT=1.2f;
     /**
      * Random that used to random-numbers generation that required for load-balancing
      */
@@ -89,7 +97,8 @@ public class LoadBalancer<TEntity> {
     }
 
     void updateCpuUsage() {
-        for (var key : entityCpuUsage.keySet()) {
+        //because we remove keys on runtime we need to iterate over their copy
+        for (var key : entityCpuUsage.keySet().toArray()) {
 
             var currentEntityCpuUsage = entityCpuUsage.get(key);
             var computedCpuUsage = computePercentageOfCpuUsage(currentEntityCpuUsage);
@@ -98,7 +107,9 @@ public class LoadBalancer<TEntity> {
             }
             // for the sake of more fluent cpu-usage transition for each entity I average
             // their change
+            currentEntityCpuUsage.PreviousTickCpuTime = currentEntityCpuUsage.TickCpuTime;
             currentEntityCpuUsage.TickCpuTime = 0l;
+
         }
     }
 
@@ -123,18 +134,19 @@ public class LoadBalancer<TEntity> {
      * entities that didn't hit upper bound of MAX_CPU_USAGE_PER_ENTITY_TYPE.
      */
     public boolean canTick(TEntity entity) {
-
+        
         var currentEntityCpuUsage = getOrCreateEntityCpuUsageData(entity);
-        var percentage = currentEntityCpuUsage.TickCpuTime*1.0f/TOTAL_CPU_TIME;
-
+        var percentage = (currentEntityCpuUsage.TickCpuTime*1.0f/TOTAL_CPU_TIME) % 1.0f;
+        var changeCoefficient = 1.0f*Math.max(currentEntityCpuUsage.PreviousTickCpuTime, currentEntityCpuUsage.TickCpuTime)/Math.min(currentEntityCpuUsage.PreviousTickCpuTime, currentEntityCpuUsage.TickCpuTime);
         // as lover-bound of cpu usage we skip ticks for some entity iff it's takes
         // more resources than it should be taking
-        if (percentage > MAX_CPU_USAGE_PER_ENTITY_TYPE)
+        if (percentage > MAX_CPU_USAGE_PER_ENTITY_TYPE || changeCoefficient>=MAX_CHANGE_COEFFICIENT){
             //if overloaded entity is not working at all it breaks game experience =(
-            if(currentEntityCpuUsage.TickCpuTime<MIN_TICK_TIME_PER_ENTITY_MS*1000000) 
-            return true;
-        else
-            return false;
+            if(currentEntityCpuUsage.TickCpuTime<MIN_TICK_TIME_PER_ENTITY_MS*1000000)
+                return true;
+            else
+                return false;
+        }
         return Rand.nextFloat() <= 1 - percentage;
     }
     /**
