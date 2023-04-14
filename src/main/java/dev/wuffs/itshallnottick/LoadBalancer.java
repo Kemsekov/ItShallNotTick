@@ -2,8 +2,6 @@ package dev.wuffs.itshallnottick;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.antlr.v4.parse.ANTLRParser.finallyClause_return;
-
 import java.util.Arrays;
 import java.util.Random;
 /**
@@ -94,6 +92,8 @@ public class LoadBalancer<TEntity> {
         LAST_INTERVALS_CPU_TIME[LAST_INTERVALS_CPU_TIME.length - 1] = newTotalTime;
 
         TOTAL_CPU_TIME = Arrays.stream(LAST_INTERVALS_CPU_TIME).reduce((a, b) -> a + b).get()/INTERVALS;
+        //to avoid division by zero
+        if(TOTAL_CPU_TIME==0) TOTAL_CPU_TIME = 1l;
     }
 
     void updateCpuUsage() {
@@ -114,8 +114,6 @@ public class LoadBalancer<TEntity> {
     }
 
     float computePercentageOfCpuUsage(EntityCpuUsageData cpuUsageData) {
-        if (TOTAL_CPU_TIME == 0)
-            return 0;
         return cpuUsageData.TickCpuTime * 1.0f / TOTAL_CPU_TIME;
     }
 
@@ -137,7 +135,12 @@ public class LoadBalancer<TEntity> {
         
         var currentEntityCpuUsage = getOrCreateEntityCpuUsageData(entity);
         var percentage = (currentEntityCpuUsage.TickCpuTime*1.0f/TOTAL_CPU_TIME) % 1.0f;
-        var changeCoefficient = 1.0f*Math.max(currentEntityCpuUsage.PreviousTickCpuTime, currentEntityCpuUsage.TickCpuTime)/Math.min(currentEntityCpuUsage.PreviousTickCpuTime, currentEntityCpuUsage.TickCpuTime);
+        var divisor = Math.min(currentEntityCpuUsage.PreviousTickCpuTime, currentEntityCpuUsage.TickCpuTime);;
+        
+        //to avoid division by zero
+        if(divisor==0) divisor = 1;
+
+        var changeCoefficient = 1.0f*Math.max(currentEntityCpuUsage.PreviousTickCpuTime, currentEntityCpuUsage.TickCpuTime)/divisor;
         // as lover-bound of cpu usage we skip ticks for some entity iff it's takes
         // more resources than it should be taking
         if (percentage > MAX_CPU_USAGE_PER_ENTITY_TYPE || changeCoefficient>=MAX_CHANGE_COEFFICIENT){
