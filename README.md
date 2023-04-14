@@ -3,6 +3,8 @@ This fork is an extension of original ItShallNotTick.
 
 Extending previous functionality, this modification adds another set of tick-cutting for entities.
 
+See [video how it works](https://www.youtube.com/watch?v=aFRYxlXGXSA)
+
 For each entity type special optimizer keeps statistic of cpu-usage
 over all ticks server process for some period of time.
 
