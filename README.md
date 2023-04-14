@@ -31,3 +31,5 @@ following requirements must be met:
   so if cpu usage for zombie is 0.15, we will skip it's ticking with 15% chance.
 
 That's it!
+
+Praise the LORD JESUS CHIRST!
